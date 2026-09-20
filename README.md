@@ -9,3 +9,6 @@
 2. `.env` 파일에 본인 토큰 값 입력
 3. 가상환경 활성화 후 `pip install -r requirements.txt`
 4. `python3 github_reminder.py` 로 실행
+
+## 테스트
+터미널에 launchctl start com.yoonseo.githubreminder 입력.
