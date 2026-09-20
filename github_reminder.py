@@ -58,7 +58,24 @@ def get_yesterday_utc_contribution_count() -> int:
 
     return data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["totalContributions"]
 
+STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".last_notified")
+
+def already_notified_today() -> bool:
+    today_str = datetime.now(timezone.utc).date().isoformat()
+    if not os.path.exists(STATE_FILE):
+        return False
+    with open(STATE_FILE, "r") as f:
+        return f.read().strip() == today_str
+
+def mark_notified_today() -> None:
+    today_str = datetime.now(timezone.utc).date().isoformat()
+    with open(STATE_FILE, "w") as f:
+        f.write(today_str)
+
 def main():
+    if already_notified_today():
+        return
+
     try:
         count = get_yesterday_utc_contribution_count()
     except Exception as e:
@@ -76,6 +93,7 @@ def main():
         body = "어제 커밋 기록이 없어요. 스트릭이 끊겼을 수 있어요 — 오늘 다시 시작해요!"
 
     send_pushbullet_notification(title, body)
+    mark_notified_today()
 
 if __name__ == "__main__":
     main()
